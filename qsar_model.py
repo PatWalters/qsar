@@ -72,7 +72,7 @@ def train_model(infile_name, model_name, num_folds=10, log_scale=False, units="u
         y_pred = xgb.predict(X_test)
         r2 = r2_score(y_test, y_pred)
         r2_list.append(r2)
-        print(f"Fold {i + 1:2d} R**2 {r2:.2f}",file=sys.st)
+        print(f"Fold {i + 1:2d} R**2 {r2:.2f}",file=sys.stderr)
     print(f"Mean R**2 {np.mean(r2_list):.2f}")
 
     xgb.fit(X, y)
