@@ -20,7 +20,7 @@ qsar_model.py predict regression --in INFILE_NAME --model MODEL_NAME --out OUTFI
 --units UNITS units (uM or nM) default is uM
 ```
 ### Classification Models
-### Training
+#### Training
 ```
 Training on IC50 data, lower values better 
 qsar_model.py train classification --in data/COX-2_train_IC50_uM.smi --model model.model --cutoff 1
@@ -28,9 +28,9 @@ qsar_model.py train classification --in data/COX-2_train_IC50_uM.smi --model mod
 Training on pIC50 values, higher values better, note the use of the "--flip" flag 
 qsar_model.py train classification --in data/COX-2_train_pIC50.smi --model model.model --cutoff 6 --flip
 ```
-### Prediction
+#### Prediction
 ```
-predict classification --in data/COX-2_test.smi --model test --out classification_out.csv
+qsar_model.py predict classification --in data/COX-2_test.smi --model model.model --out classification_out.csv
 ```
 ### Regression Models
 #### Training
