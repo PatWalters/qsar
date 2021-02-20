@@ -30,7 +30,7 @@ qsar_model.py train classification --in data/COX-2_train_pIC50.smi --model model
 ```
 #### Prediction
 ```
-predict classification --in data/COX-2_test.smi --model model.model --out classification_out.csv
+qsar_model.py predict classification --in data/COX-2_test.smi --model model.model --out classification_out.csv
 ```
 ### Regression Models
 #### Training
