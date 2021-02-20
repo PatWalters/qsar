@@ -8,7 +8,7 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 from xgboost import XGBRegressor, XGBClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, roc_auc_score
+from sklearn.metrics import r2_score, roc_auc_score, matthews_corrcoef
 from docopt import docopt
 import os
 
@@ -75,18 +75,22 @@ def train_classification_model(infile_name, model_name, cutoff, flip=False, num_
     calc_fps(df)
     X = np.asarray(list(df.fp.values))
     y = df.act_class.values
-    auc_list = []
+    stat_list = []
     for i in range(0, num_folds):
         X_train, X_test, y_train, y_test = train_test_split(X, y)
-        xgb = XGBClassifier()
+        xgb = XGBClassifier(use_label_encoder=False, eval_metric='logloss')
         xgb.fit(X_train, y_train)
         y_pred = xgb.predict(X_test)
         auc = roc_auc_score(y_test, y_pred)
-        auc_list.append(auc)
-        print(f"Fold {i + 1:2d} AUC {auc:.2f}", file=sys.stderr)
+        mcc = matthews_corrcoef(y_test, y_pred)
+        stat_list.append({'auc' : auc, 'mcc' : mcc})
+        print(f"Fold {i + 1:2d} AUC {auc:.2f} MCC {mcc:.2f}", file=sys.stderr)
+    auc_list = [x["auc"] for x in stat_list]
+    mcc_list = [x["mcc"] for x in stat_list]
     print(f"Mean AUC {np.mean(auc_list):.2f}", file=sys.stderr)
+    print(f"Mean MCC {np.mean(mcc_list):.2f}", file=sys.stderr)
 
-    xgb = XGBClassifier()
+    xgb = XGBClassifier(use_label_encoder=False, eval_metric='logloss')
     xgb.fit(X, y)
     xgb.save_model(model_name)
     print(f"Model saved to {model_name}", file=sys.stderr)
@@ -122,7 +126,7 @@ def predict_classification(infile_name, model_name, outfile_name):
     df = read_data(infile_name)
     calc_fps(df)
     X = np.asarray(list(df.fp.values))
-    xgb = XGBClassifier()
+    xgb = XGBClassifier(use_label_encoder=False, eval_metric='logloss')
     xgb.load_model(model_name)
     print(f"Loaded model from {model_name}")
     y_pred = xgb.predict(X)
